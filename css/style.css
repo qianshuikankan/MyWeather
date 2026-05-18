@@ -1,0 +1,1220 @@
+/* ================================================================
+   WEATHERPRO — 完整样式表
+   ================================================================
+   目录：
+   1.  主题变量（亮色 / 暗色）
+   2.  基础重置
+   3.  布局系统
+   4.  顶部导航栏
+   5.  搜索框与建议列表
+   6.  欢迎页面
+   7.  当前天气（Hero 区）
+   8.  子入口（分钟级降水 / 预警）
+   9.  逐小时预报
+   10. 逐天预报
+   11. 空气质量
+   12. 生活指数
+   13. 天文信息
+   14. 时光机
+   15. 公共组件
+   16. 浮动面板（Modal）
+   17. 加载骨架屏
+   18. 错误与空状态
+   19. 动画
+   20. 响应式
+   ================================================================ */
+
+
+  /* ============================================================
+     1. 主题变量
+     ============================================================ */
+:root {
+  /* 亮色主题（默认） */
+  --bg-page: #f0f4fb;
+  --bg-card: #ffffff;
+  --bg-card-alt: #f8fafc;
+  --bg-input: #f1f5f9;
+  --bg-overlay: rgba(15, 23, 42, 0.5);
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --accent-light: rgba(59, 130, 246, 0.1);
+  --accent-glow: rgba(59, 130, 246, 0.15);
+
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --info: #06b6d4;
+
+  --temp-high: #ef4444;
+  --temp-low: #3b82f6;
+
+  --badge-bg: #fee2e2;
+  --badge-text: #dc2626;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 999px;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans SC", "PingFang SC",
+    "Microsoft YaHei", sans-serif;
+  --transition: 0.25s ease;
+}
+
+[data-theme="dark"] {
+  --bg-page: #0b1120;
+  background-image: none;
+  --bg-card: #131c31;
+  --bg-card-alt: #1a2744;
+  --bg-input: #1a2744;
+  --bg-overlay: rgba(0, 0, 0, 0.6);
+
+  --text-primary: #e8edf5;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  --accent: #60a5fa;
+  --accent-hover: #93bbfd;
+  --accent-light: rgba(96, 165, 250, 0.1);
+  --accent-glow: rgba(96, 165, 250, 0.12);
+
+  --temp-high: #f87171;
+  --temp-low: #60a5fa;
+
+  --badge-bg: rgba(239, 68, 68, 0.15);
+  --badge-text: #fca5a5;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
+
+  --border: #1e293b;
+  --border-light: #1e293b;
+}
+
+/* 暗色模式下反转天气图标颜色（SVG 多为黑色/深色） */
+[data-theme="dark"] img[src*="qweather-icons"],
+[data-theme="dark"] .cw-icon,
+[data-theme="dark"] .h-icon,
+[data-theme="dark"] .d-icon,
+[data-theme="dark"] .dc-icon,
+[data-theme="dark"] .forecast-icon,
+[data-theme="dark"] .weather-icon {
+  filter: brightness(0) invert(1);
+}
+
+
+  /* ============================================================
+     2. 基础重置
+     ============================================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 20px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-page);
+  background-image:
+    radial-gradient(ellipse at 20% 20%, rgba(251, 172, 90, 0.12), transparent 50%),
+    radial-gradient(ellipse at 80% 10%, rgba(0, 132, 248, 0.10), transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(109, 194, 255, 0.10), transparent 50%),
+    radial-gradient(ellipse at 10% 70%, rgba(172, 130, 244, 0.10), transparent 50%);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: background var(--transition), color var(--transition);
+  line-height: 1.6;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--accent-hover); }
+
+img { display: block; max-width: 100%; }
+button { cursor: pointer; font: inherit; border: none; background: none; }
+input { font: inherit; }
+
+
+  /* ============================================================
+     3. 布局系统
+     ============================================================ */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  width: 100%;
+}
+
+.main-content {
+  flex: 1;
+  padding-top: 20px;
+  padding-bottom: 40px;
+}
+
+.section {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 24px;
+  margin-bottom: 16px;
+  transition: background var(--transition), box-shadow var(--transition);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.section-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+
+  /* ============================================================
+     4. 顶部导航栏
+     ============================================================ */
+.header {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: background var(--transition);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  height: 60px;
+  gap: 12px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.logo {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: -0.3px;
+  margin-left: 15px;
+}
+
+.header-city {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  padding: 2px 10px;
+  border-left: 1px solid var(--border);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.btn-theme {
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  background: var(--bg-input);
+  white-space: nowrap;
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+.btn-theme:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+
+  /* ============================================================
+     5. 搜索框与建议列表
+     ============================================================ */
+.search-wrapper {
+  position: relative;
+  max-width: 300px;
+  width: 100%;
+  display: flex;
+  gap: 6px;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 0;
+  padding: 7px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.search-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+.search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.search-btn {
+  padding: 7px 14px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-full);
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+.search-btn:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.suggestions {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  list-style: none;
+  max-height: 280px;
+  overflow-y: auto;
+  display: none;
+  z-index: 200;
+}
+.suggestions.show {
+  display: block;
+}
+.suggestions li {
+  padding: 10px 16px;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-light);
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.suggestions li:last-child { border-bottom: none; }
+.suggestions li:hover { background: var(--accent-light); }
+.suggestions li .city-adm {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  margin-left: auto;
+}
+
+
+  /* ============================================================
+     6. 欢迎页面
+     ============================================================ */
+.welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 20px;
+  text-align: center;
+}
+.welcome-icon { margin-bottom: 24px; opacity: 0.6; }
+.welcome-text {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+}
+
+
+  /* ============================================================
+     7. 当前天气（Hero 区）
+     ============================================================ */
+.hero {
+  padding: 28px;
+}
+
+.current-main {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.current-primary {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.current-temp-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.cw-icon {
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+}
+
+.cw-temp {
+  font-size: 4rem;
+  font-weight: 200;
+  line-height: 1;
+  color: var(--text-primary);
+  letter-spacing: -2px;
+}
+.cw-temp::after {
+  content: "°C";
+  font-size: 1.4rem;
+  font-weight: 400;
+  vertical-align: super;
+  color: var(--text-muted);
+}
+
+.cw-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cw-desc {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+}
+
+.cw-range {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.cw-range span:first-child { color: var(--temp-high); }
+.cw-range span:last-child  { color: var(--temp-low); }
+
+.cw-city {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+.cw-time {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* Current weather detail grid */
+.current-details {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 4px;
+  padding: 16px 0 0;
+  border-top: 1px solid var(--border);
+}
+
+.detail-item {
+  text-align: center;
+  min-width: 80px;
+  flex: 1 0 auto;
+}
+.detail-label {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+.detail-val {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+
+  /* ============================================================
+     8. 子入口（分钟级降水 / 预警）
+     ============================================================ */
+.sub-entry {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0;
+  border-top: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: background 0.15s;
+  border-radius: var(--radius-sm);
+  margin-top: 4px;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+.sub-entry:hover {
+  background: var(--accent-light);
+}
+
+.sub-entry-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.sub-entry-label {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.sub-entry-summary {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  flex: 1;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sub-entry-arrow {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.sub-entry:hover .sub-entry-arrow {
+  transform: translateX(3px);
+  color: var(--accent);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--radius-full);
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.badge-warn {
+  background: var(--badge-bg);
+  color: var(--badge-text);
+}
+
+
+  /* ============================================================
+     9. 逐小时预报
+     ============================================================ */
+.hourly-scroll {
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.hourly-scroll::-webkit-scrollbar { height: 4px; }
+.hourly-scroll::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+.hourly-track {
+  display: flex;
+  gap: 4px;
+  min-width: max-content;
+}
+
+.hourly-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 14px;
+  min-width: 68px;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s;
+  cursor: default;
+}
+.hourly-cell:hover { background: var(--accent-light); }
+.hourly-cell.is-now {
+  background: var(--accent-light);
+  border: 1px solid var(--accent);
+}
+
+.hourly-cell .h-time {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.hourly-cell .h-icon { width: 28px; height: 28px; }
+.hourly-cell .h-temp {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.hourly-cell .h-precip {
+  font-size: 0.65rem;
+  color: var(--accent);
+}
+.hourly-cell .h-wind {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+}
+
+
+  /* ============================================================
+     10. 逐天预报
+     ============================================================ */
+.daily-grid {
+  display: grid;
+  gap: 6px;
+}
+
+.daily-scroll {
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+  display: flex;
+  justify-content: center;
+}
+.daily-scroll::-webkit-scrollbar { height: 4px; }
+.daily-scroll::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+.daily-track {
+  display: flex;
+  gap: 8px;
+  min-width: max-content;
+  flex-shrink: 0;
+}
+
+.daily-card {
+  flex: 0 0 auto;
+  width: 150px;
+  text-align: center;
+  padding: 16px 12px;
+  border-radius: var(--radius-md);
+  background: var(--bg-card-alt);
+  border: 1px solid var(--border-light);
+  transition: background 0.15s, transform 0.2s;
+  cursor: default;
+}
+.daily-card:hover {
+  background: var(--accent-light);
+  transform: translateY(-2px);
+}
+
+.daily-card .dc-day {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.daily-card .dc-date {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.daily-card .dc-icon {
+  width: 36px; height: 36px;
+  margin: 0 auto 6px;
+}
+.daily-card .dc-temps {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.85rem;
+}
+.daily-card .dc-high {
+  font-weight: 600;
+  color: var(--temp-high);
+}
+.daily-card .dc-low {
+  color: var(--text-muted);
+}
+.daily-card .dc-wind {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  white-space: nowrap;
+}
+
+
+  /* ============================================================
+     11. 空气质量
+     ============================================================ */
+.air-summary {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.air-wrapper {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 16px;
+}
+
+.air-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.air-right {
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .air-wrapper { grid-template-columns: 1fr; }
+}
+
+.air-aqi {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--accent-light);
+}
+
+.air-aqi .aqi-value {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text-primary);
+}
+.air-aqi .aqi-level {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.air-pollutants {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.pollutant-item {
+  text-align: center;
+  padding: 4px 0;
+}
+.pollutant-item .p-name {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+.pollutant-item .p-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.pollutant-item .p-unit {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+}
+
+
+  /* ============================================================
+     12. 生活指数
+     ============================================================ */
+.index-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.index-grid .index-card {
+  width: 170px;
+  flex-shrink: 0;
+}
+
+.index-card {
+  text-align: center;
+  padding: 18px 14px;
+  border-radius: var(--radius-md);
+  background: var(--bg-card-alt);
+  transition: background 0.15s, transform 0.2s;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 110px;
+}
+.index-card:hover {
+  background: var(--accent-light);
+  transform: translateY(-2px);
+}
+
+.index-card .idx-name {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.index-card .idx-num {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.2;
+}
+.index-card .idx-level {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.btn-index {
+  padding: 5px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  background: var(--bg-card);
+  transition: all var(--transition);
+  cursor: pointer;
+}
+.btn-index:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-light);
+}
+
+
+  /* ============================================================
+     13. 天文信息
+     ============================================================ */
+.astro-summary {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.astro-item {
+  flex: 0 0 auto;
+  width: 130px;
+  text-align: center;
+  padding: 14px 12px;
+  border-radius: var(--radius-md);
+  background: var(--bg-card-alt);
+}
+
+.astro-item .a-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.astro-item .a-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+
+  /* ============================================================
+     14. 时光机
+     ============================================================ */
+.timeline-summary {
+  overflow-x: auto;
+}
+
+.timeline-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.timeline-table th {
+  text-align: left;
+  padding: 8px 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.timeline-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-secondary);
+}
+
+.timeline-table tr:hover td {
+  background: var(--accent-light);
+}
+
+
+  /* ============================================================
+     15. 公共组件
+     ============================================================ */
+.btn-detail {
+  font-size: 0.78rem;
+  color: var(--accent);
+  padding: 5px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  transition: all 0.2s;
+  background: var(--bg-card);
+  cursor: pointer;
+}
+.btn-detail:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-light);
+}
+
+/* Loading skeleton */
+.skeleton {
+  background: linear-gradient(90deg,
+    var(--border-light) 25%,
+    var(--bg-card-alt) 50%,
+    var(--border-light) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+
+  /* ============================================================
+     16. 浮动面板（Modal）
+     ============================================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s, visibility 0.25s;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-panel {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  width: 82%;
+  max-width: 720px;
+  max-height: 82vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  padding: 28px 32px;
+  position: relative;
+  transform: scale(0.95) translateY(10px);
+  transition: transform 0.25s;
+}
+
+.modal-overlay.active .modal-panel {
+  transform: scale(1) translateY(0);
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: var(--text-muted);
+  border-radius: 50%;
+  transition: all 0.15s;
+}
+.modal-close:hover {
+  background: var(--accent-light);
+  color: var(--text-primary);
+}
+
+.modal-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+  padding-right: 40px;
+}
+
+.modal-body {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+
+  /* ============================================================
+     17. 加载骨架屏
+     ============================================================ */
+.loading-pulse {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 0;
+}
+.loading-pulse .pulse-row {
+  height: 14px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg,
+    var(--border-light) 25%,
+    var(--bg-card-alt) 50%,
+    var(--border-light) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+.loading-pulse .pulse-row:nth-child(1) { width: 60%; }
+.loading-pulse .pulse-row:nth-child(2) { width: 80%; }
+.loading-pulse .pulse-row:nth-child(3) { width: 45%; }
+
+
+  /* ============================================================
+     18. 错误与空状态
+     ============================================================ */
+.error-state {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-muted);
+}
+.error-state .error-icon {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+.error-state .error-msg {
+  font-size: 0.85rem;
+  margin-bottom: 12px;
+}
+.error-state .btn-retry {
+  font-size: 0.8rem;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
+}
+.error-state .btn-retry:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 24px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+
+  /* ============================================================
+     19. 动画
+     ============================================================ */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.section {
+  animation: fadeIn 0.4s ease both;
+}
+.section:nth-child(2) { animation-delay: 0.05s; }
+.section:nth-child(3) { animation-delay: 0.1s; }
+.section:nth-child(4) { animation-delay: 0.15s; }
+.section:nth-child(5) { animation-delay: 0.2s; }
+.section:nth-child(6) { animation-delay: 0.25s; }
+
+
+  /* ============================================================
+     20. 响应式
+     ============================================================ */
+@media (max-width: 768px) {
+  .header-inner {
+    height: auto;
+    padding: 10px 0;
+    flex-wrap: wrap;
+  }
+  .header-right {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .search-wrapper {
+    max-width: none;
+  }
+
+  .current-primary {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .current-details {
+    justify-content: flex-start;
+  }
+  .detail-item { min-width: 70px; flex: 0 0 auto; }
+
+  .cw-temp { font-size: 3rem; }
+  .cw-icon { width: 56px; height: 56px; }
+
+  .daily-scroll { justify-content: flex-start; }
+  .daily-card {
+    width: 110px;
+    padding: 10px 6px;
+  }
+  .daily-card .dc-icon { width: 28px; height: 28px; }
+
+  .air-wrapper {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-panel {
+    width: 92%;
+    padding: 20px;
+    max-height: 88vh;
+  }
+
+  .index-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  html { font-size: 16px; }
+  .container { max-width: 100%; padding: 0 12px; }
+  .section { padding: 14px; }
+  .hero { padding: 18px; }
+  .header-inner { height: auto; padding: 8px 0; gap: 8px; }
+  .logo { font-size: 1rem; }
+  .search-input { font-size: 0.8rem; padding: 5px 10px; }
+  .search-btn { font-size: 0.75rem; padding: 5px 10px; }
+
+  .current-details {
+    flex-direction: column;
+    gap: 4px;
+  }
+  .detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px 0;
+    min-width: 0;
+  }
+  .detail-label { margin-bottom: 0; font-size: 0.65rem; }
+  .detail-val { font-size: 0.8rem; }
+
+  .cw-temp { font-size: 2.2rem; }
+  .cw-temp::after { font-size: 1rem; }
+  .cw-icon { width: 44px; height: 44px; }
+  .cw-desc { font-size: 0.85rem; }
+  .cw-city { font-size: 0.78rem; }
+  .cw-time { font-size: 0.7rem; }
+
+  .section-title { font-size: 0.9rem; }
+
+  .hourly-cell { min-width: 48px; padding: 6px 6px; }
+  .hourly-cell .h-time { font-size: 0.65rem; }
+  .hourly-cell .h-temp { font-size: 0.75rem; }
+  .hourly-cell .h-wind { font-size: 0.5rem; }
+
+  .daily-card { width: 90px; padding: 8px 4px; }
+  .daily-card .dc-day { font-size: 0.72rem; }
+  .daily-card .dc-date { font-size: 0.55rem; }
+  .daily-card .dc-icon { width: 24px; height: 24px; }
+  .daily-card .dc-temps { font-size: 0.72rem; }
+  .daily-card .dc-wind { font-size: 0.5rem; }
+
+  .index-grid { display: flex; flex-wrap: nowrap; gap: 4px; overflow-x: auto; }
+  .index-grid .index-card { padding: 6px 4px; min-height: 50px; width: 65px; flex-shrink: 0; }
+  .index-card .idx-name { font-size: 0.5rem; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .index-card .idx-num { font-size: 0.75rem; }
+  .index-card .idx-level { font-size: 0.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .air-pollutants { grid-template-columns: repeat(2, 1fr); }
+  .air-aqi { width: 70px !important; height: 70px !important; }
+  .air-aqi .aqi-value { font-size: 1.4rem !important; }
+
+  .astro-item { width: 100px; padding: 10px 8px; }
+  .astro-item .a-label { font-size: 0.6rem; }
+  .astro-item .a-value { font-size: 0.8rem; }
+
+  .modal-panel { padding: 16px; }
+
+  .btn-theme { font-size: 0.7rem; padding: 4px 10px; }
+  .btn-detail, .btn-index { font-size: 0.7rem; padding: 4px 10px; }
+
+  .daily-scroll { justify-content: flex-start; }
+  .air-wrapper { grid-template-columns: 1fr; }
+
+  .sub-entry { padding: 8px 4px; }
+  .sub-entry-label { font-size: 0.78rem; }
+  .sub-entry-summary { font-size: 0.7rem; }
+
+  .welcome-text { font-size: 0.85rem; }
+
+  .timeline-table { font-size: 0.7rem; }
+  .timeline-table th, .timeline-table td { padding: 4px 6px; }
+}

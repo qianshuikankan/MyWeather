@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyWeather天气查询</title>
+  <link rel="icon" type="image/svg+xml" href="https://cdn.jsdelivr.net/npm/qweather-icons@latest/icons/101.svg">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ============================= HEADER ============================= -->
+  <header class="header">
+    <div class="header-inner container">
+      <div class="header-left">
+        <h1 class="logo">MyWeather</h1>
+        <span class="header-city" id="headerCity">选择城市</span>
+      </div>
+      <div class="header-right">
+        <div class="search-wrapper">
+          <input
+            type="text"
+            id="searchInput"
+            class="search-input"
+            placeholder="搜索城市（中文或拼音）..."
+            autocomplete="off"
+          >
+          <button id="searchBtn" class="search-btn" title="搜索">搜索</button>
+          <ul class="suggestions" id="suggestionList"></ul>
+        </div>
+        <button id="themeToggle" class="btn-theme">暗色模式</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================= MAIN ============================= -->
+  <main class="container main-content">
+
+    <!-- ========== WELCOME (initial state) ========== -->
+    <div class="welcome" id="welcome">
+      <div class="welcome-icon">
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+          <circle cx="32" cy="32" r="16" fill="var(--accent)" opacity="0.2"/>
+          <circle cx="32" cy="32" r="10" fill="var(--accent)"/>
+          <path d="M32 6v6M32 52v6M6 32h6M52 32h6M12.7 12.7l4.2 4.2M47.1 47.1l4.2 4.2M12.7 51.3l4.2-4.2M47.1 16.9l4.2-4.2" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <p class="welcome-text">输入城市名称开始查询天气</p>
+    </div>
+
+    <!-- ========== 1. CURRENT WEATHER (Hero) ========== -->
+    <section class="section hero" id="sec-current" data-module="current" style="display:none">
+      <div class="current-main">
+        <div class="current-primary">
+          <div class="current-temp-group">
+            <img id="cwIcon" class="cw-icon" src="" alt="">
+            <span class="cw-temp" id="cwTemp">--</span>
+            <div class="cw-meta">
+              <p class="cw-desc" id="cwDesc">--</p>
+              <p class="cw-range">
+                <span id="cwTempMax">--</span>° / <span id="cwTempMin">--</span>°
+              </p>
+            </div>
+          </div>
+          <p class="cw-city" id="cwCity">--</p>
+          <p class="cw-time" id="cwTime">--</p>
+        </div>
+        <div class="current-details">
+          <div class="detail-item">
+            <span class="detail-label">体感</span>
+            <span class="detail-val" id="cwFeels">--</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">湿度</span>
+            <span class="detail-val" id="cwHumidity">--</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">风速</span>
+            <span class="detail-val" id="cwWind">--</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">风级</span>
+            <span class="detail-val" id="cwWindScale">--</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">风向</span>
+            <span class="detail-val" id="cwWindDir">--</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">气压</span>
+            <span class="detail-val" id="cwPressure">--</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">AQI</span>
+            <span class="detail-val" id="cwVis">--</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">空气质量</span>
+            <span class="detail-val" id="cwUV">--</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">降水量</span>
+            <span class="detail-val" id="cwPrecip">--</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sub-entry: 分钟级降水 -->
+      <div class="sub-entry" data-modal="minutely">
+        <span class="sub-entry-icon sub-icon-rain">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M9 2C5.5 2 3 4.8 3 8c0 2.5 2 4.5 4 5.5l.3-1.2C6 11.5 5 10 5 8.2 5 5.8 7 4 9 4s4 1.8 4 4.2c0 1.8-.9 3.3-2.3 4.1l.3 1.2c2-1 4-3 4-5.5 0-3.2-2.5-6-6-6z" fill="var(--accent)"/>
+            <path d="M8.5 12l-1 4M11 11.5l-1 4" stroke="var(--accent)" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="sub-entry-label">分钟级降水</span>
+        <span class="sub-entry-summary" id="minutelySummary">未来2小时降雨趋势</span>
+        <span class="sub-entry-arrow">›</span>
+      </div>
+      <!-- Sub-entry: 天气预警 -->
+      <div class="sub-entry" data-modal="alert">
+        <span class="sub-entry-icon sub-icon-alert">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M9 2l7 13H2L9 2z" stroke="var(--accent)" stroke-width="1.5" fill="none"/>
+            <circle cx="9" cy="10" r=".8" fill="var(--accent)"/>
+            <path d="M9 6v3" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="sub-entry-label">天气预警</span>
+        <span class="sub-entry-summary" id="alertSummary">暂无预警</span>
+        <span class="badge badge-warn" id="alertBadge" style="display:none">0</span>
+        <span class="sub-entry-arrow">›</span>
+      </div>
+    </section>
+
+    <!-- ========== 2. HOURLY FORECAST ========== -->
+    <section class="section" id="sec-hourly" data-module="hourly" style="display:none">
+      <div class="section-header">
+        <h2 class="section-title">逐小时预报</h2>
+        <button class="btn-detail" data-modal="hourly">详情 ›</button>
+      </div>
+      <div class="hourly-scroll" id="hourlyContainer">
+        <div class="hourly-track"></div>
+      </div>
+    </section>
+
+    <!-- ========== 3. DAILY FORECAST ========== -->
+    <section class="section" id="sec-daily" data-module="daily" style="display:none">
+      <div class="section-header">
+        <h2 class="section-title">逐天预报</h2>
+        <button class="btn-detail" data-modal="daily">详情 ›</button>
+      </div>
+      <div id="dailyContainer">
+        <!-- rendered by JS -->
+      </div>
+    </section>
+
+    <!-- ========== 4. AIR QUALITY ========== -->
+    <section class="section" id="sec-air" data-module="air" style="display:none">
+      <div class="section-header">
+        <h2 class="section-title">空气质量</h2>
+        <button class="btn-detail" data-modal="air">详情 ›</button>
+      </div>
+      <div class="air-summary" id="airContainer">
+        <!-- rendered by JS -->
+      </div>
+    </section>
+
+    <!-- ========== 5. WEATHER INDEX ========== -->
+    <section class="section" id="sec-index" data-module="index" style="display:none">
+      <div class="section-header">
+        <h2 class="section-title">生活指数</h2>
+        <button class="btn-detail" data-modal="index">详情 ›</button>
+      </div>
+      <div class="index-grid" id="indexContainer">
+        <!-- rendered by JS -->
+      </div>
+    </section>
+
+    <!-- ========== 6. ASTRONOMY ========== -->
+    <section class="section" id="sec-astronomy" data-module="astronomy" style="display:none">
+      <div class="section-header">
+        <h2 class="section-title">天文信息</h2>
+        <button class="btn-detail" data-modal="astronomy">详情 ›</button>
+      </div>
+      <div class="astro-summary" id="astroContainer">
+        <!-- rendered by JS -->
+      </div>
+    </section>
+
+    <!-- ========== 7. TIME MACHINE ========== -->
+    <section class="section" id="sec-timeline" data-module="timeline" style="display:none">
+      <div class="section-header">
+        <h2 class="section-title">历史天气（时光机）</h2>
+        <button class="btn-detail" data-modal="timeline">详情 ›</button>
+      </div>
+      <div class="timeline-summary" id="timelineContainer">
+        <!-- rendered by JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================= FOOTER ============================= -->
+  <footer class="footer">
+    <p>数据来源：<a href="https://dev.qweather.com" target="_blank" rel="noopener">和风天气</a> | 仅供学习使用</p>
+  </footer>
+
+  <!-- ============================= MODAL ============================= -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-panel">
+      <button class="modal-close" id="modalClose">&times;</button>
+      <h3 class="modal-title" id="modalTitle"></h3>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
