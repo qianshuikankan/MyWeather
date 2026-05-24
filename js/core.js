@@ -1,15 +1,6 @@
-/* ================================================================
-   core.js — WeatherApp 模块注册系统 + Modal 管理
-   ================================================================
-   设计思路：
-   - 所有功能模块通过 WeatherApp.register() 注册
-   - 每个模块生命周期：init → fetch → render
-   - 模块间不直接耦合，通过 WeatherApp 调度
-   - Modal 系统统一管理弹窗，点击 backdrop / ESC 关闭
-   ================================================================ */
 
 const WeatherApp = {
-  /* ---- 内部状态 ---- */
+
   _modules: {},       // { name: { init, fetch, render, renderDetail, ... } }
   _location: null,    // 当前选中城市 { id, name, adm }
   _modalEl: null,     // Modal DOM 元素缓存
@@ -22,7 +13,7 @@ const WeatherApp = {
       console.warn(`[WeatherApp] 模块 "${name}" 已注册，将被覆盖`);
     }
     this._modules[name] = module;
-    return this; // 支持链式调用
+    return this; 
   },
 
   getModule(name) {
@@ -30,7 +21,7 @@ const WeatherApp = {
   },
 
   /* ============================================================
-     初始化 — 依次调用所有模块的 init()
+     初始化，依次调用所有模块的 init()
      ============================================================ */
   async init() {
     for (const [name, mod] of Object.entries(this._modules)) {
@@ -47,7 +38,7 @@ const WeatherApp = {
   },
 
   /* ============================================================
-     刷新 — 切换城市后调用，所有模块并行 fetch + render
+     刷新，切换城市后调用，所有模块并行 fetch + render
      ============================================================ */
   async refresh(location) {
     this._location = location;
@@ -145,7 +136,7 @@ const WeatherApp = {
         if (content) this.openModal(content, mod.name || moduleName);
       } else {
         this.openModal(
-          '<div class="empty-state"><p>该功能尚未实现，敬请期待</p></div>',
+          '<div class="empty-state"><p>该功能尚未实现</p></div>',
           mod?.name || moduleName
         );
       }

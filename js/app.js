@@ -1,17 +1,8 @@
-/* ================================================================
-   app.js — 入口文件
-   ================================================================
-   职责：
-   1. 导入所有模块（模块在 import 时自动注册到 WeatherApp）
-   2. 城市搜索（输入 → 防抖 → 请求 → 选择）
-   3. 主题切换
-   4. 初始化 WeatherApp
-   ================================================================ */
 
 import { WeatherApp } from './core.js';
 import { API } from './api.js';
 
-/* ---- 引入所有模块（自注册）---- */
+/* ---- 引入所有模块，自注册---- */
 import './modules/current.js';
 import './modules/hourly.js';
 import './modules/daily.js';
@@ -155,7 +146,7 @@ searchInput.addEventListener('keydown', (e) => {
 async function init() {
   initTheme();
 
-  // 初始化 API（需先设置 API_HOST）
+  // 初始化 API
   API.init();
 
   document.getElementById('themeToggle').addEventListener('click', toggleTheme);

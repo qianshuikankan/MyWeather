@@ -18,12 +18,10 @@ WeatherApp.register('hourly', {
     this._data = data.hourly || [];
     const list = this._data;
     let html = '';
-    const now = new Date();
-    const currentHour = now.getHours();
 
     list.forEach((h, i) => {
       const hour = new Date(h.fxTime).getHours();
-      const isNow = i === 0 || hour === currentHour;
+      const isNow = i === 0;
       html += `
         <div class="hourly-cell ${isNow ? 'is-now' : ''}">
           <span class="h-time">${isNow ? '现在' : hour + ':00'}</span>

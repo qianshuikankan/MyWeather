@@ -1,35 +1,8 @@
-/* ================================================================
-   WEATHERPRO — 完整样式表
-   ================================================================
-   目录：
-   1.  主题变量（亮色 / 暗色）
-   2.  基础重置
-   3.  布局系统
-   4.  顶部导航栏
-   5.  搜索框与建议列表
-   6.  欢迎页面
-   7.  当前天气（Hero 区）
-   8.  子入口（分钟级降水 / 预警）
-   9.  逐小时预报
-   10. 逐天预报
-   11. 空气质量
-   12. 生活指数
-   13. 天文信息
-   14. 时光机
-   15. 公共组件
-   16. 浮动面板（Modal）
-   17. 加载骨架屏
-   18. 错误与空状态
-   19. 动画
-   20. 响应式
-   ================================================================ */
-
-
   /* ============================================================
      1. 主题变量
      ============================================================ */
 :root {
-  /* 亮色主题（默认） */
+  /* 默认亮色主题 */
   --bg-page: #f0f4fb;
   --bg-card: #ffffff;
   --bg-card-alt: #f8fafc;
@@ -105,7 +78,7 @@
   --border-light: #1e293b;
 }
 
-/* 暗色模式下反转天气图标颜色（SVG 多为黑色/深色） */
+/* 暗色模式下反转天气图标颜色 */
 [data-theme="dark"] img[src*="qweather-icons"],
 [data-theme="dark"] .cw-icon,
 [data-theme="dark"] .h-icon,
@@ -374,7 +347,7 @@ input { font: inherit; }
 
 
   /* ============================================================
-     7. 当前天气（Hero 区）
+     7. 当前天气
      ============================================================ */
 .hero {
   padding: 28px;
@@ -447,7 +420,7 @@ input { font: inherit; }
   color: var(--text-muted);
 }
 
-/* Current weather detail grid */
+
 .current-details {
   display: flex;
   flex-wrap: wrap;
@@ -920,7 +893,7 @@ input { font: inherit; }
   background: var(--accent-light);
 }
 
-/* Loading skeleton */
+
 .skeleton {
   background: linear-gradient(90deg,
     var(--border-light) 25%,
@@ -1138,7 +1111,13 @@ input { font: inherit; }
   }
 
   .index-grid {
+    display: grid;
     grid-template-columns: repeat(3, 1fr);
+    justify-content: unset;
+    gap: 10px;
+  }
+  .index-grid .index-card {
+    width: auto;
   }
 }
 

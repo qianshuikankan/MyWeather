@@ -24,10 +24,30 @@ WeatherApp.register('timeline', {
         API.getHistoricalWeather(location.id, dateStr),
         API.getHistoricalAir(location.id, dateStr),
       ]);
-      const w = wr.status === 'fulfilled' ? wr.value?.weatherDaily || wr.value?.now : null;
+      const raw = wr.status === 'fulfilled' ? wr.value : null;
+      const w = raw?.weatherDaily || raw?.now || null;
+      const hourlyList = raw?.weatherHourly || [];
+      // 统计全天总降水量
+      const totalPrecip = hourlyList.reduce((s, h) => s + (parseFloat(h.precip) || 0), 0);
+      // 总降水量 >= 1mm 时，按降水量加权取有降水时段的天气
+      let weatherText = '';
+      if (totalPrecip >= 1) {
+        const weighted = {};
+        hourlyList.forEach(h => {
+          const p = parseFloat(h.precip) || 0;
+          if (p > 0 && h.text) weighted[h.text] = (weighted[h.text] || 0) + p;
+        });
+        weatherText = Object.keys(weighted).sort((a, b) => weighted[b] - weighted[a])[0] || '';
+      }
+      if (!weatherText) {
+        const freq = {};
+        hourlyList.forEach(h => { if (h.text) freq[h.text] = (freq[h.text] || 0) + 1; });
+        weatherText = Object.keys(freq).sort((a, b) => freq[b] - freq[a])[0]
+          || hourlyList.find(h => h.text)?.text || '';
+      }
       const airHourly = ar.status === 'fulfilled' ? ar.value?.airHourly : null;
       const a = airHourly?.length ? airHourly[0] : null;
-      return { date: dateStr, weather: w, air: a };
+      return { date: dateStr, weather: w, weatherText, air: a };
     });
 
     return Promise.all(jobs);
@@ -52,7 +72,7 @@ WeatherApp.register('timeline', {
         <td>${r.date.slice(5)}</td>
         <td style="color:var(--temp-high)">${w.tempMax || '--'}°</td>
         <td style="color:var(--temp-low)">${w.tempMin || '--'}°</td>
-        <td>${w.moonPhase || '--'}</td>
+        <td>${r.weatherText || '--'}</td>
         <td>${w.precip ? w.precip + 'mm' : '--'}</td>
         <td>${a?.aqi || '--'}</td>
       </tr>`;

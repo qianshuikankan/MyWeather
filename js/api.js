@@ -1,25 +1,13 @@
-/* ================================================================
-   api.js — 和风天气 API 封装 + 缓存系统
-   ================================================================
-   设计要点：
-   - 统一请求入口，自动拼接 Key + 错误处理
-   - 内存缓存 + TTL，避免频繁请求
-   - 每个 API 接口对应一个方法，返回 Promise
-   ================================================================ */
 
-/* ---- 配置 ----
-   请替换以下两项为你在 https://dev.qweather.com 获取的信息：
-   1. API_HOST — 控制台 → 设置 → API Host（如 "xxxxx.qweatherapi.com"）
-   2. API_KEY  — 控制台 → 凭据 → 公钥/Key */
 const API_KEY = '0ba392ef7b6c4ebeb948e7a014b2084f';
 let API_HOST = 'p363yxrrr5.re.qweatherapi.com';
 
 const API = {
-  /* API 基础 URL — 根据 API_HOST 动态拼接 */
+
   BASE: '',
   GEO:  '',
 
-  /* 初始化：设置 API_HOST（默认从配置变量读取）*/
+  /* 初始化：设置 API_HOST*/
   init(host) {
     if (host) API_HOST = host;
     if (!API_HOST) {
@@ -31,7 +19,7 @@ const API = {
     console.log(`[API] 已配置 Host: ${API_HOST}`);
   },
 
-  /* ---- 内存缓存 ---- */
+  /* ---- 缓存 ---- */
   _cache: new Map(),
 
   /* ---- 通用请求方法 ---- */
@@ -108,14 +96,14 @@ const API = {
   },
 
   /* ============================================================
-     以下为各数据接口 — 具体实现在后续 Part 中逐个完成
+     以下为各数据接口，在后续 Part 中逐个完成
      ============================================================ */
 
   /* ---- 当前天气 ---- */
   async getCurrentWeather(locationId) {
     return this.get(`${this.BASE}/weather/now`, {
       location: locationId,
-      _ttl: 0.25, // 15 秒（调试用，正式可改为 5 分钟）
+      _ttl: 0.25, 
     });
   },
 

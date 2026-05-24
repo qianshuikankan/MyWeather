@@ -1,7 +1,7 @@
 import { WeatherApp } from '../core.js';
 import { API } from '../api.js';
 
-/** 严重程度 → 颜色映射 */
+/** 严重程度的颜色 */
 const SEVERITY_COLORS = {
   extreme:   { bg: '#fef2f2', text: '#dc2626', badge: '#dc2626', label: '极端' },
   severe:    { bg: '#fff7ed', text: '#ea580c', badge: '#ea580c', label: '严重' },

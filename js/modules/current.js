@@ -61,7 +61,6 @@ WeatherApp.register('current', {
     this.els.uv.textContent = airIdx?.category || '--';
     this.els.precip.textContent = now.precip + 'mm';
 
-    // 今日最高/最低温
     this.els.tempMax.textContent = today?.tempMax || '--';
     this.els.tempMin.textContent = today?.tempMin || '--';
   },
